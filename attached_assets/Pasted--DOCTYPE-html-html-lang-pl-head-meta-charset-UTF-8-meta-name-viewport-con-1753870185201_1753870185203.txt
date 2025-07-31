@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badanie ARISTOTLE - Repozytorium Dokumentów</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e40af;
+            --primary-blue-light: #3b82f6;
+            --secondary-gray: #64748b;
+            --light-gray: #f8fafc;
+            --border-gray: #e2e8f0;
+            --success-green: #059669;
+            --warning-orange: #ea580c;
+            --text-dark: #0f172a;
+            --text-medium: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-section p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        /* Navigation */
+        .nav-section {
+            background: var(--light-gray);
+            border-bottom: 1px solid var(--border-gray);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid var(--border-gray);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-medium);
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+            min-height: 60vh;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: var(--text-medium);
+            font-size: 1rem;
+        }
+
+        /* Search and Filter Controls */
+        .controls {
+            background: white;
+            border: 1px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 0.75rem;
+            background: var(--light-gray);
+            border: 1px solid var(--border-gray);
+            border-radius: 25px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* Document Grid */
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .document-card {
+            background: white;
+            border: 1px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .document-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-blue-light);
+            transform: translateY(-2px);
+        }
+
+        .doc-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .doc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            background: #eff6ff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .doc-description {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .doc-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--secondary-gray);
+            margin-bottom: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-medium);
+            border: 1px solid var(--border-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-gray);
+        }
+
+        /* Reference Documents */
+        .reference-docs {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .reference-docs h3 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .reference-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .reference-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-gray);
+            text-align: center;
+        }
+
+        .reference-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .reference-item p {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-section p,
+        .footer-section li {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .header-meta {
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-tab {
+                min-width: 250px;
+            }
+
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-actions {
+                flex-direction: column;
+            }
+
+            .filter-chips {
+                justify-content: center;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .document-card {
+                padding: 1rem;
+            }
+
+            .logo-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .doc-header {
+                gap: 0.75rem;
+            }
+
+            .doc-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>Badanie ARISTOTLE</h1>
+                    <p>Repozytorium Dokumentów Klinicznych i Standardowych Procedur Operacyjnych</p>
+                </div>
+                <div class="header-meta">
+                    <div>Protokół v.1.6 (24.07.2025)</div>
+                    <div>EudraCT: 2024-518657-42-00</div>
+                    <div class="status-badge">Badanie aktywne</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-section">
+        <div class="container">
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="sops">Standardowe Procedury Operacyjne</div>
+                <div class="nav-tab" data-tab="core">Dokumenty Podstawowe</div>
+                <div class="nav-tab" data-tab="forms">Formularze i Załączniki</div>
+                <div class="nav-tab" data-tab="reference">Materiały Referencyjne</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- SOPs Tab -->
+            <div class="tab-content active" id="sops">
+                <div class="section-header">
+                    <h2 class="section-title">Standardowe Procedury Operacyjne</h2>
+                    <p class="section-description">System ARI-[FAZA]-[OBSZAR]-[NUMER] - hierarchiczne procedury dla realizacji badania ARISTOTLE</p>
+                </div>
+
+                <div class="controls">
+                    <input type="text" class="search-box" placeholder="Wyszukaj SOP po nazwie, kodzie lub opisie..." id="searchInput">
+                    <div class="filter-chips">
+                        <div class="filter-chip active" data-filter="all">Wszystkie SOP</div>
+                        <div class="filter-chip" data-filter="qualification">Faza 01 - Kwalifikacja</div>
+                        <div class="filter-chip" data-filter="preparation">Faza 02 - Przygotowanie</div>
+                        <div class="filter-chip" data-filter="intervention">Faza 03 - Interwencja</div>
+                        <div class="filter-chip" data-filter="observation">Faza 04 - Obserwacja</div>
+                    </div>
+                </div>
+
+                <div class="document-grid" id="sopGrid">
+                    <!-- Phase 01 - Qualification -->
+                    <div class="document-card" data-category="qualification">
+                        <div class="doc-header">
+                            <div class="doc-icon">B01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Badania Laboratoryjne Kwalifikacyjne</div>
+                                <div class="doc-code">ARI-01-B-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Kompleksowe procedury badań laboratoryjnych dla kwalifikacji uczestników: morfologia (Hb ≥9,5 g/dl, PLT ≥50k/mm³), biochemia (AST/ALT/bilirubina <3xGGN, eGFR ≥30), serologia (HIV, HBV, HCV, kiła) oraz testy ciążowe.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 01 - Kwalifikacja</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('VASCOQL6-FORM')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('VASCOQL6-FORM')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reference Materials Tab -->
+            <div class="tab-content" id="reference">
+                <div class="reference-docs">
+                    <h3>Dokumenty Wzorcowe</h3>
+                    <div class="reference-list">
+                        <div class="reference-item">
+                            <h4>Protokół ARISTOTLE v.1.6</h4>
+                            <p>Główny protokół badania (24.07.2025)</p>
+                        </div>
+                        <div class="reference-item">
+                            <h4>Broszura Badacza v.1.2</h4>
+                            <p>Dane bezpieczeństwa i skuteczności (10.10.2022)</p>
+                        </div>
+                        <div class="reference-item">
+                            <h4>Dossier IMPD v.1.1</h4>
+                            <p>Dossier produktu leczniczego (28.10.2022)</p>
+                        </div>
+                        <div class="reference-item">
+                            <h4>System Nazewnictwa SOP</h4>
+                            <p>Format: ARI-[FAZA]-[OBSZAR]-[NUMER]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-grid">
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">ICH</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Wytyczne ICH GCP E6(R2)</div>
+                                <div class="doc-code">ICH-E6-R2</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Międzynarodowe wytyczne Dobrej Praktyki Klinicznej - niezbędne dla prowadzenia i monitorowania wszystkich badań klinicznych zgodnie ze standardami regulacyjnymi.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Wytyczne Regulacyjne</span>
+                            <span>Standard Międzynarodowy</span>
+                        </div>
+                        <div class="doc-actions">
+                            <a href="https://database.ich.org/sites/default/files/E6_R2_Addendum.pdf" target="_blank" class="btn btn-primary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </a>
+                            <a href="https://database.ich.org/sites/default/files/E6_R2_Addendum.pdf" target="_blank" class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">UE</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Rozporządzenie UE o Badaniach Klinicznych</div>
+                                <div class="doc-code">UE-CTR-536/2014</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Rozporządzenie Unii Europejskiej o badaniach klinicznych 536/2014 regulujące prowadzenie, autoryzację i nadzór nad badaniami klinicznymi w UE oraz CTIS.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Rozporządzenie UE</span>
+                            <span>Ramy Prawne</span>
+                        </div>
+                        <div class="doc-actions">
+                            <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/PDF/?uri=CELEX:32014R0536" target="_blank" class="btn btn-primary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </a>
+                            <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/PDF/?uri=CELEX:32014R0536" target="_blank" class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">ATMP</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Rozporządzenie UE o ATMP</div>
+                                <div class="doc-code">UE-ATMP-1394/2007</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Rozporządzenie o produktach leczniczych terapii zaawansowanej (ATMP) regulujące terapie genowe, komórkowe i inżynierii tkankowej - podstawa prawna dla L-PRF.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Rozporządzenie UE</span>
+                            <span>ATMP</span>
+                        </div>
+                        <div class="doc-actions">
+                            <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/PDF/?uri=CELEX:32007R1394" target="_blank" class="btn btn-primary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </a>
+                            <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/PDF/?uri=CELEX:32007R1394" target="_blank" class="btn btn-secondary">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Informacje o Badaniu</h4>
+                    <p>Badanie Kliniczne ARISTOTLE</p>
+                    <p>Wersja Protokołu: 1.6</p>
+                    <p>EudraCT: 2024-518657-42-00</p>
+                    <p>Główny Badacz: Prof. Zbigniew Gałązka</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Ośrodki Uczestniczące</h4>
+                    <ul>
+                        <li>Uniwersyteckie Centrum Kliniczne WUM</li>
+                        <li>Centrum Medycyny Translacyjnej SGGW</li>
+                        <li>Bank Tkanek i Komórek CMT SGGW</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>System Nazewnictwa SOP</h4>
+                    <p>Format: ARI-[FAZA]-[OBSZAR]-[NUMER]</p>
+                    <p>01-Kwalifikacja, 02-Przygotowanie</p>
+                    <p>03-Interwencja, 04-Obserwacja</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Repozytorium Dokumentów</h4>
+                    <p>Ostatnia aktualizacja: Sierpień 2025</p>
+                    <p>Kontrola wersji: Aktywna</p>
+                    <p>Zgodność: ICH GCP, UE CTR, ATMP</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all tabs and contents
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const documentCards = document.querySelectorAll('#sopGrid .document-card');
+
+                    documentCards.forEach(card => {
+                        const title = card.querySelector('.doc-title').textContent.toLowerCase();
+                        const code = card.querySelector('.doc-code').textContent.toLowerCase();
+                        const description = card.querySelector('.doc-description').textContent.toLowerCase();
+
+                        if (title.includes(searchTerm) || code.includes(searchTerm) || description.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Filter functionality
+            const filterChips = document.querySelectorAll('.filter-chip');
+            filterChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    const filterValue = this.getAttribute('data-filter');
+                    const documentCards = document.querySelectorAll('#sopGrid .document-card');
+
+                    // Remove active class from all filter chips
+                    filterChips.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked chip
+                    this.classList.add('active');
+
+                    // Filter documents
+                    documentCards.forEach(card => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+
+        // Document interaction functions
+        function viewDocument(docId) {
+            alert(`Otwieranie dokumentu: ${docId}\n\nW rzeczywistej implementacji tutaj zostałby otwarty plik PDF lub dokument w nowej karcie.`);
+        }
+
+        function printDocument(docId) {
+            alert(`Drukowanie dokumentu: ${docId}\n\nW rzeczywistej implementacji tutaj zostałby uruchomiony dialog drukowania.`);
+        }
+    </script>
+</body>
+</html>="viewDocument('ARI-01-B-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card" data-category="intervention">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--success-green);">P01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Protokół Podania L-PRF</div>
+                                <div class="doc-code">ARI-03-P-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Śródmięśniowe podanie L-PRF obejmujące protokół 56 iniekcji, obsługę produktu leczniczego, wymagania kontroli jakości oraz dokumentację podania z rejestrem Z01. Procedura wykonywana w CMT SGGW.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 03 - Produkt</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-03-P-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-03-P-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phase 04 - Observation -->
+                    <div class="document-card" data-category="observation">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">M01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Monitoring Pooperacyjny</div>
+                                <div class="doc-code">ARI-04-M-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Protokół monitorowania bezpieczeństwa pooperacyjnego obejmujący obserwację 6-godzinną, kontrolę parametrów życiowych, ocenę zdarzeń niepożądanych oraz kryteria wypisania do UCK WUM.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 04 - Monitoring</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-04-M-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-04-M-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card" data-category="observation">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">S02</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Protokół Wizyt Kontrolnych</div>
+                                <div class="doc-code">ARI-04-S-02</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Harmonogram i procedury wizyt kontrolnych O2-O5 w okresie 24-miesięcznej obserwacji: wizyty w 1, 3, 6, 12 i 24 miesiącu z oceną efektywności, bezpieczeństwa i jakości życia (VascoQL-6).
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 04 - Obserwacja</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-04-S-02')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-04-S-02')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Documents Tab -->
+            <div class="tab-content" id="core">
+                <div class="section-header">
+                    <h2 class="section-title">Dokumenty Podstawowe</h2>
+                    <p class="section-description">Podstawowe dokumenty regulacyjne i protokolarne dla badania ARISTOTLE</p>
+                </div>
+
+                <div class="document-grid">
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--success-green);">PROT</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Protokół Badania</div>
+                                <div class="doc-code">ARISTOTLE-PROTOKOL-v1.6</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Główny dokument protokołu w wersji 1.6 z dnia 24.07.2025 zawierający kompletny projekt badania, metodologię, kryteria włączenia/wyłączenia, punkt końcowy i wymagania regulacyjne dla terapii L-PRF w CLI.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Dokument Podstawowy</span>
+                            <span>Wersja 1.6 (Lipiec 2025)</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('PROTOKOL-1.6')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('PROTOKOL-1.6')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--success-green);">BROSZ</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Broszura Badacza</div>
+                                <div class="doc-code">ARISTOTLE-BROSZURA-v1.2</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Kompleksowa broszura badacza w wersji 1.2 zawierająca dane przedkliniczne i kliniczne, informacje o bezpieczeństwie, farmakologii, mechanizmie działania i charakterystykę L-PRF jako ATMP.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Dokument Podstawowy</span>
+                            <span>Wersja 1.2 (Październik 2022)</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('BROSZURA-1.2')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('BROSZURA-1.2')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--success-green);">DOSS</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Dossier Badanego Produktu Leczniczego</div>
+                                <div class="doc-code">ARISTOTLE-DOSSIER-v1.1</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Dossier produktu leczniczego terapii zaawansowanej w wersji 1.1 zawierające informacje o wytwarzaniu, kontroli jakości, stabilności i wymaganiach regulacyjnych dla L-PRF zgodnie z ATMP.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Dokument Podstawowy</span>
+                            <span>Wersja 1.1 (Październik 2022)</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('DOSSIER-1.1')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('DOSSIER-1.1')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forms & Attachments Tab -->
+            <div class="tab-content" id="forms">
+                <div class="section-header">
+                    <h2 class="section-title">Formularze i Załączniki</h2>
+                    <p class="section-description">Formularze kliniczne, załączniki i dokumenty pomocnicze</p>
+                </div>
+
+                <div class="document-grid">
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">Z01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Lista Przewozowa</div>
+                                <div class="doc-code">ARI-02-L-01-Z01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Formularz dokumentacji transportu pacjenta między UCK WUM a CMT SGGW, obejmujący kontrole bezpieczeństwa, potwierdzenie identyfikacji, stan kliniczny i protokoły przekazania.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Załącznik Transportowy</span>
+                            <span>Załącznik Z01</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('TRANSPORT-Z01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('TRANSPORT-Z01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">F01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Kwestionariusz Kwalifikacji Dawcy</div>
+                                <div class="doc-code">SZJ-22/F01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Kompleksowy formularz kwalifikacji dawcy obejmujący wywiad epidemiologiczny (23 punkty), screening chorób zakaźnych, narażenie na czynniki ryzyka i wymagania banku tkanek BTiK.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Formularz BTiK</span>
+                            <span>SZJ-22/F01</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('SZJ-22-F01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('SZJ-22-F01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">F02</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Świadoma Zgoda na Pobranie Krwi</div>
+                                <div class="doc-code">SZJ-22/F02</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Formularz świadomej zgody pacjenta specjalnie dla procedur autologicznego pobrania krwi (120ml) i wytwarzania L-PRF zgodnie z wymogami BTiK CMT SGGW.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Formularz BTiK</span>
+                            <span>SZJ-22/F02</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('SZJ-22-F02')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('SZJ-22-F02')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">RUT</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Skala Klasyfikacji Rutherforda</div>
+                                <div class="doc-code">ARI-01-S-01-Z01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Standardowa skala klasyfikacji Rutherforda dla stopniowania choroby tętnic obwodowych (kategorie 0-6), niezbędna dla kwalifikacji i monitorowania pacjentów z krytycznym niedokrwieniem kończyn.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Skala Kliniczna</span>
+                            <span>Narzędzie Referencyjne</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('RUTHERFORD-SCALE')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('RUTHERFORD-SCALE')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">WIFI</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Skala Klasyfikacji WIfI</div>
+                                <div class="doc-code">ARI-01-S-01-Z02</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            System klasyfikacji Wound, Ischemia, and foot Infection (WIfI) dla kompleksowej oceny pacjentów z krytycznym niedokrwieniem kończyn. Ocena ryzyka amputacji i potencjału gojenia.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Skala Kliniczna</span>
+                            <span>Narzędzie Referencyjne</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('WIFI-SCALE')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('WIFI-SCALE')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--secondary-gray);">QL6</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Formularz Jakości Życia VascoQL-6</div>
+                                <div class="doc-code">ARI-01-S-01-Z03</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Zwalidowany formularz oceny jakości życia specjalnie zaprojektowany dla pacjentów z chorobą tętnic obwodowych i krytycznym niedokrwieniem kończyn. Stosowany w wizytach kontrolnych.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Ocena Jakości Życia</span>
+                            <span>Narzędzie Zwalidowane</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-01-B-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card" data-category="qualification">
+                        <div class="doc-header">
+                            <div class="doc-icon">O01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Protokół Kwalifikacji Obrazowej</div>
+                                <div class="doc-code">ARI-01-O-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Procedury obrazowania dla kwalifikacji uczestników: angiografia TK naczyń kończyn dolnych, pomiary ABPI (wskaźnik kostka-ramię), protokoły oceny TcpO₂ (ciśnienie transkutanego tlenu), skale Rutherforda i WIfI.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 01 - Kwalifikacja</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-01-O-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-01-O-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card" data-category="qualification">
+                        <div class="doc-header">
+                            <div class="doc-icon">D01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Kwalifikacja Dawcy L-PRF</div>
+                                <div class="doc-code">ARI-01-D-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Procedury kwalifikacji dawcy krwi autologicznej obejmujące wymagania banku tkanek BTiK CMT SGGW, formularze SZJ-22/F01 (kwestionariusz kwalifikacji) i SZJ-22/F02 (zgoda na pobranie), protokoły weryfikacji i rejestracji dawcy.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 01 - Kwalifikacja</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-01-D-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-01-D-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="document-card" data-category="qualification">
+                        <div class="doc-header">
+                            <div class="doc-icon">S01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Ścieżka Kliniczna Pacjenta</div>
+                                <div class="doc-code">ARI-01-S-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Dokument nadrzędny definiujący kompletną ścieżkę kliniczną od rekrutacji przez 24-miesięczne obserwacje uczestników badania ARISTOTLE. Określa chronologię wizyt, procedur i punktów końcowych badania.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 01 - Standardy</span>
+                            <span>Wersja 2.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-01-S-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-01-S-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phase 02 - Preparation -->
+                    <div class="document-card" data-category="preparation">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--warning-orange);">L01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Procedura Transportu Uczestników</div>
+                                <div class="doc-code">ARI-02-L-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Logistyka transportu między UCK WUM a CMT SGGW obejmująca protokoły karetek medycznych, dokumentację transportu (Lista przewozowa Z01), procedury bezpieczeństwa oraz kontinuum opieki medycznej podczas przemieszczania.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 02 - Logistyka</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-02-L-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-02-L-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+                                </svg>
+                                Drukuj
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phase 03 - Intervention -->
+                    <div class="document-card" data-category="intervention">
+                        <div class="doc-header">
+                            <div class="doc-icon" style="background: var(--success-green);">C01</div>
+                            <div class="doc-info">
+                                <div class="doc-title">Procedura Rewaskularyzacji</div>
+                                <div class="doc-code">ARI-03-C-01</div>
+                            </div>
+                        </div>
+                        <div class="doc-description">
+                            Procedury rewaskularyzacji wewnątrznaczyniowej obejmujące protokoły angioplastyki tętnic kończyn dolnych, wymagania sali hybrydowej z aparaturą PET/MRI oraz obrazowanie pozabiegowe.
+                        </div>
+                        <div class="doc-meta">
+                            <span>Faza 03 - Chirurgia</span>
+                            <span>Wersja 1.0</span>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary" onclick="viewDocument('ARI-03-C-01')">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                                Otwórz
+                            </button>
+                            <button class="btn btn-secondary" onclick="printDocument('ARI-03-C-01')">
+                                <svg class="icon" viewBox="0 0 24 24
